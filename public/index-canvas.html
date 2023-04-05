@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnakeGPT Canvas</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+            padding: 10px;
+            margin: 0 auto 20px;
+            box-sizing: border-box;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .score {
+            font-size: 24px;
+        }
+
+        #gameCanvas {
+            display: block;
+            margin: 0 auto;
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="title">SnakeGPT Canvas</div>
+        <div class="score">Score: <span id="scoreValue">0</span></div>
+    </div>
+
+    <canvas id="gameCanvas" width="1000" height="620"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreValue = document.getElementById('scoreValue');
+
+        const boxSize = 20;
+        const boxSpacing = 4;
+        const gridColumns = 48;
+        const gridRows = 30;
+        const redBoxTime = 2000;
+        const trailTimeout = 2000;
+
+        let grid = [];
+        let score = 0;
+        let redBox = { x: -1, y: -1 };
+        let redBoxTimer;
+        let trailTimers = {};
+
+        function drawBox(x, y, color) {
+            ctx.fillStyle = color;
+            ctx.fillRect(x * (boxSize + boxSpacing), y * (boxSize + boxSpacing), boxSize, boxSize);
+        }
+
+        function animateRedBoxFade(startTime, targetRedBox) {
+            const duration = redBoxTime;
+            const currentTime = new Date().getTime();
+            const elapsedTime = currentTime - startTime;
+            const progress = Math.min(elapsedTime / duration, 1);
+
+            const startColor = [255, 0, 0]; // RGB for red
+            const endColor = [255, 255, 255]; // RGB for white
+            const currentColor = startColor.map((start, index) => Math.round(start + (endColor[index] - start) * progress));
+
+            if (redBox.x === targetRedBox.x && redBox.y === targetRedBox.y) {
+                drawBox(redBox.x, redBox.y, `rgb(${currentColor[0]}, ${currentColor[1]}, ${currentColor[2]})`);
+            }
+
+            if (progress < 1 && redBox.x === targetRedBox.x && redBox.y === targetRedBox.y) {
+                requestAnimationFrame(() => animateRedBoxFade(startTime, targetRedBox));
+            } else if (redBox.x === targetRedBox.x && redBox.y === targetRedBox.y) {
+                score = 0;
+                updateScore();
+            }
+        }
+
+
+        function resetRedBox() {
+            clearTimeout(redBoxTimer);
+            if (redBox.x !== -1 && redBox.y !== -1) {
+                drawBox(redBox.x, redBox.y, '#ffffff');
+            }
+            redBox.x = Math.floor(Math.random() * (gridColumns - 1));
+            redBox.y = Math.floor(Math.random() * (gridRows - 1));
+            redBoxTimer = setTimeout(resetRedBox, redBoxTime);
+            animateRedBoxFade(new Date().getTime(), { x: redBox.x, y: redBox.y });
+        }
+
+
+        function updateScore(value) {
+            score += value;
+            scoreValue.textContent = score;
+        }
+
+        function handleTrail(x, y) {
+            const key = `${x}-${y}`;
+            clearTimeout(trailTimers[key]);
+            drawBox(x, y, '#0000ff');
+            trailTimers[key] = setTimeout(() => {
+                drawBox(x, y, '#ffffff');
+            }, trailTimeout);
+        }
+
+        function handleMouseMove(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = Math.floor((e.clientX - rect.left) / (boxSize + boxSpacing));
+            const y = Math.floor((e.clientY - rect.top) / (boxSize + boxSpacing));
+
+            handleTrail(x, y);
+
+            if (x === redBox.x && y === redBox.y) {
+                updateScore(1);
+                resetRedBox();
+            }
+        }
+
+        canvas.addEventListener('mousemove', handleMouseMove);
+
+        for (let x = 0; x < gridColumns; x++) {
+            for (let y = 0; y < gridRows; y++) {
+                drawBox(x, y, '#ffffff');
+            }
+        }
+
+        resetRedBox();
+
+
+    </script>
+</body>
+
+</html>
