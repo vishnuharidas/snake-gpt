@@ -90,7 +90,7 @@
                 requestAnimationFrame(() => animateRedBoxFade(startTime, targetRedBox));
             } else if (redBox.x === targetRedBox.x && redBox.y === targetRedBox.y) {
                 score = 0;
-                updateScore();
+                updateScore(0);
             }
         }
 
