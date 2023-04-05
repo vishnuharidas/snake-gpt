@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnakeGPT</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(48, 20px);
+            grid-template-rows: repeat(30, 20px);
+            grid-gap: 2px;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        .grid-item {
+            width: 20px;
+            height: 20px;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+
+        .grid-item:hover {
+            background-color: #00f;
+        }
+
+        .box {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            background-color: white;
+            border: 1px solid #333;
+            box-sizing: border-box;
+        }
+
+        .box.red {
+            background-color: red;
+            animation: fadeToWhite 2s linear forwards;
+        }
+
+        .box.blue {
+            background-color: blue;
+        }
+
+        @keyframes fadeToWhite {
+            0% {
+                background-color: red;
+            }
+
+            100% {
+                background-color: white;
+            }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+            padding: 10px;
+            margin: 0 auto 20px;
+            box-sizing: border-box;
+        }
+
+        .title-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .generated-by {
+            font-size: 12px;
+        }
+
+        .generated-by a {
+            text-decoration: none;
+            color: #333;
+        }
+
+        .generated-by a:hover {
+            text-decoration: underline;
+        }
+
+        .score {
+            font-size: 24px;
+        }
+
+        .instructions {
+            font-size: 14px;
+            text-align: left;
+            position: relative;
+            width: 200px;
+        }
+
+        .instructions-title {
+            font-weight: bold;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .instructions-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #333;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+        }
+
+        .instructions-title:hover+.instructions-content {
+            display: block;
+        }
+
+        .instructions ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+    </style>
+    <script>
+        let score = 0;
+        let redBoxTimeout;
+
+        function createBoxes() {
+            const grid = document.querySelector(".grid");
+            for (let i = 0; i < 1440; i++) {
+                const box = document.createElement("div");
+                box.className = "box";
+                box.id = `box-${i}`;
+                grid.appendChild(box);
+            }
+        }
+
+        function getRandomBox() {
+            const index = Math.floor(Math.random() * 1440);
+            return document.getElementById(`box-${index}`);
+        }
+
+        function setNewRedBox() {
+            clearTimeout(redBoxTimeout);
+            const previousRedBox = document.querySelector(".box.red");
+            if (previousRedBox) {
+                previousRedBox.classList.remove("red");
+                previousRedBox.style.animation = 'none';
+                setTimeout(() => {
+                    previousRedBox.style.animation = '';
+                }, 0);
+            }
+            const redBox = getRandomBox();
+            redBox.classList.add("red");
+            redBoxTimeout = setTimeout(() => {
+                setNewRedBox();
+                resetScore();
+            }, 2000);
+        }
+
+        function incrementScore() {
+            score++;
+            document.querySelector(".score").textContent = `Score: ${score}`;
+        }
+
+        function resetScore() {
+            score = 0;
+            document.querySelector(".score").textContent = `Score: ${score}`;
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            createBoxes();
+            setNewRedBox();
+
+            const boxes = document.querySelectorAll(".box");
+            boxes.forEach(box => {
+                let timer;
+                box.addEventListener("mouseover", () => {
+                    if (box.classList.contains("red")) {
+                        incrementScore();
+                        setNewRedBox();
+                    } else {
+                        box.style.backgroundColor = "blue";
+                        clearTimeout(timer);
+                    }
+                });
+
+                box.addEventListener("mouseout", () => {
+                    if (!box.classList.contains("red")) {
+                        timer = setTimeout(() => {
+                            box.style.backgroundColor = "";
+                        }, 2000);
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div class="header">
+        <div class="title-container">
+            <div class="title">SnakeGPT</div>
+            <div class="generated-by">
+                Completely generated by ChatGPT based on prompts. <a href="https://github.com/vishnuharidas/snake-gpt"
+                    target="_blank">See the code.</a>
+            </div>
+        </div>
+        <div class="instructions">
+            <p class="instructions-title">Instructions</p>
+            <div class="instructions-content">
+                <ol>
+                    <li>Hover over the red box before it turns white.</li>
+                    <li>Score a point each time you hover over the red box in time.</li>
+                    <li>If you miss a red box, your score resets to zero.</li>
+                </ol>
+            </div>
+        </div>
+        <div class="score">Score: 0</div>
+    </div>
+
+
+    <div class="grid"></div>
+</body>
+
+</html>
