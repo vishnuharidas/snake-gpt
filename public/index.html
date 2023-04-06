@@ -175,6 +175,46 @@
         function incrementScore() {
             score++;
             document.querySelector(".score").textContent = `Score: ${score}`;
+            if (score === 10) {
+                clearTimeout(redBoxTimeout);
+                explodeAllBoxes();
+                showYouWinMessage();
+            }
+        }
+
+        function explodeBox(box) {
+            const colors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#9400D3'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+
+            box.style.backgroundColor = color;
+            box.style.borderRadius = '50%';
+            box.style.transition = 'all 0.5s';
+            box.style.transform = `translate(${Math.floor(Math.random() * 200) - 100}px, ${Math.floor(Math.random() * 200) - 100}px)`;
+            box.style.opacity = '0';
+        }
+
+
+        function explodeAllBoxes() {
+            const boxes = Array.from(document.querySelectorAll('.box'));
+            boxes.sort(() => Math.random() - 0.5);
+            boxes.forEach((box, index) => {
+                setTimeout(() => explodeBox(box), index * 10);
+            });
+        }
+
+
+        function showYouWinMessage() {
+            const winMessage = document.createElement('div');
+            winMessage.style.position = 'absolute';
+            winMessage.style.top = '50%';
+            winMessage.style.left = '50%';
+            winMessage.style.transform = 'translate(-50%, -50%)';
+            winMessage.style.fontSize = '48px';
+            winMessage.style.fontWeight = 'bold';
+            winMessage.style.color = '#FFD700';
+            winMessage.style.textShadow = '2px 2px 4px #000000';
+            winMessage.innerHTML = 'You Win!';
+            document.body.appendChild(winMessage);
         }
 
         function resetScore() {
