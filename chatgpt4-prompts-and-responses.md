@@ -1953,11 +1953,9 @@ Replace your existing CSS with this updated version in the `<style>` block in th
 
 ---
 
-#### After this, I asked to write the same thing using Canvas, but that didn't go well. I am not copying-over the prompts here. You can see the [result here](https://snake-gpt.web.app/index-canvas.html).
-
-## Next Day
-
-Next day, I planned to create an "exploding" animation when the user reaches a certain score. Here are the prompts and results:
+> _After this, I asked to write the same thing using Canvas, but that didn't go well. I am not copying-over the prompts here. You can see the [result here](https://snake-gpt.web.app/index-canvas.html). See the [source here](public/index-canvas.html)._
+> 
+> _Next day, I planned to create an "exploding" animation when the user reaches a certain score. Here are the prompts and results:_
 
 ---
 
@@ -1965,7 +1963,7 @@ Everything works great. Now let's add the end of the game. When the score reache
 
 ---
 
-_(Generates a code for Canvas based solution)_
+> _(Generates a code for Canvas based solution)_
 
 ---
 
