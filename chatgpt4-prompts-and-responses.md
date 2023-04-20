@@ -1290,6 +1290,7 @@ I've updated the code to reset the score to zero if the user misses hovering ove
     <div class="grid"></div>
 </body>
 </html>
+```
 
 ---
 
